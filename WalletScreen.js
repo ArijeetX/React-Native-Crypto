@@ -7,12 +7,19 @@ import walletStore from "./stores/WalletStore";
 
 const { width } = Dimensions.get("window");
 
+/**
+ * Wallet screen component.
+ * Displays wallet import functionality and navigation options.
+ */
 const WalletScreen = observer(() => {
   const [privateKey, setPrivateKey] = useState("");
   const [isInvalidPrivateKey, setIsInvalidPrivateKey] = useState(false);
   const [walletType, setWalletType] = useState("");
   const [selectedWalletType, setselectedWalletType] = useState(true);
 
+  /**
+   * Handles the import of the selected wallet type using the provided private key.
+   */
   const handleImportWallet = () => {
     if (walletType === "") {
       setselectedWalletType(false);
@@ -36,11 +43,18 @@ const WalletScreen = observer(() => {
   };
 
   const navigation = useNavigation();
+
+  /**
+   * Navigates to the transaction screen.
+   */
   const navigateToTransactionScreen = () => {
     cryptoStore.setTransactionCheckersFalse();
     navigation.navigate("Transaction");
   };
 
+  /**
+   * Navigates to the previous transactions screen.
+   */
   const navigateToPreviousTransactionsScreen = () => {
     navigation.navigate("PreviousTransactions");
   };

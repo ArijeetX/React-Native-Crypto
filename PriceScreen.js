@@ -1,18 +1,21 @@
-import React from "react";
-import { observer } from "mobx-react";
-import { View, Text, StyleSheet, Button, Dimensions } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-
-import priceStore from "./stores/PriceStore";
-
+/**
+ * React component for displaying the price screen.
+ * @returns {JSX.Element} PriceScreen component.
+ */
 const PriceScreen = observer(() => {
   const { bitcoinPrice, utsdPrice } = priceStore;
   const navigation = useNavigation();
 
+  /**
+   * Navigates to the wallet screen.
+   */
   const navigateToWalletScreen = () => {
     navigation.navigate("Wallet");
   };
 
+  /**
+   * Navigates to the transaction screen.
+   */
   const navigateToTransactionScreen = () => {
     navigation.navigate("Transaction");
   };
@@ -53,6 +56,9 @@ const PriceScreen = observer(() => {
 
 const { width } = Dimensions.get("window");
 
+/**
+ * Styles for the PriceScreen component.
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,

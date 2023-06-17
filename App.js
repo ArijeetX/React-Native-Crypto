@@ -1,4 +1,4 @@
-import "@ethersproject/shims"
+import "@ethersproject/shims";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -7,9 +7,14 @@ import WalletScreen from "./WalletScreen";
 import TransactionScreen from "./TransactionScreen";
 import PreviousTransactionsScreen from "./PreviousTransactionsScreen";
 import TransactionDetailsScreen from "./TransactionDetailsScreen";
+
 const Stack = createStackNavigator();
 
-
+/**
+ * The main application component.
+ *
+ * @returns {JSX.Element} The JSX element representing the application.
+ */
 const App = () => {
   return (
     <NavigationContainer>

@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, Linking, TouchableOpacity, ScrollView, Dimensions } from "react-native";
-import { observer } from "mobx-react";
-import transactionDetailsStore from "./stores/TransactionDetailsStore";
-
+/**
+ * React component for displaying transaction details.
+ * @param {object} route - The route object containing the transactionHash and walletType parameters.
+ * @returns {JSX.Element} TransactionDetailsScreen component.
+ */
 const TransactionDetailsScreen = observer(({ route }) => {
   const { transactionHash, walletType } = route.params;
 
+  /**
+   * Fetches transaction details on component mount.
+   */
   useEffect(() => {
     transactionDetailsStore.fetchTransactionDetails(transactionHash, walletType);
     console.log(transactionDetailsStore.transactionDetails);
@@ -13,6 +16,9 @@ const TransactionDetailsScreen = observer(({ route }) => {
 
   const { transactionDetails, isLoading, error } = transactionDetailsStore;
 
+  /**
+   * Opens the transaction link in a web browser.
+   */
   const openTransactionLink = () => {
     let url = "";
     if (walletType === "bitcoin") {
@@ -54,6 +60,9 @@ const TransactionDetailsScreen = observer(({ route }) => {
   );
 });
 
+/**
+ * Styles for the TransactionDetailsScreen component.
+ */
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,

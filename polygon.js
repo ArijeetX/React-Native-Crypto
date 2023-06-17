@@ -1,5 +1,10 @@
 const { ethers } = require('ethers');
 
+/**
+ * Imports a Polygon wallet using the provided private key and logs the wallet address and private key.
+ * @param {string} privateKey - The private key of the wallet to import.
+ * @returns {Promise<void>} A Promise that resolves once the wallet is imported and the details are logged.
+ */
 async function importPolygonWallet(privateKey) {
   try {
     // Connect to the Mumbai Testnet

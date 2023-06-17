@@ -1,17 +1,25 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { observer } from "mobx-react";
-import { useNavigation } from "@react-navigation/native";
-import transactionDetailsStore from "./stores/TransactionDetailsStore";
-import cryptoStore from "./stores/TransactionStore";
-
+/**
+ * React component for displaying the previous transactions screen.
+ * @returns {JSX.Element} PreviousTransactionsScreen component.
+ */
 const PreviousTransactionsScreen = observer(() => {
   const navigation = useNavigation();
 
+  /**
+   * Handles the press event when a transaction is selected.
+   * @param {string} transactionHash - The hash of the transaction.
+   * @param {string} walletType - The type of wallet associated with the transaction.
+   */
   const handleTransactionPress = (transactionHash, walletType) => {
     navigation.navigate("TransactionDetails", { transactionHash, walletType });
   };
 
+  /**
+   * Renders the transaction history for a specific wallet type.
+   * @param {string[]} transactions - The array of transactions.
+   * @param {string} walletType - The type of wallet associated with the transactions.
+   * @returns {JSX.Element[]} Array of transaction links.
+   */
   const renderTransactionHistory = (transactions, walletType) => {
     return transactions.map((transaction, index) => (
       <TouchableOpacity
@@ -25,6 +33,10 @@ const PreviousTransactionsScreen = observer(() => {
     ));
   };
 
+  /**
+   * Renders the Bitcoin transactions.
+   * @returns {JSX.Element} Bitcoin transactions.
+   */
   const renderBitcoinTransactions = () => {
     return (
       <>
@@ -34,6 +46,10 @@ const PreviousTransactionsScreen = observer(() => {
     );
   };
 
+  /**
+   * Renders the Polygon transactions.
+   * @returns {JSX.Element} Polygon transactions.
+   */
   const renderPolygonTransactions = () => {
     return (
       <>

@@ -14,6 +14,9 @@ import { address as bitcoinAdress, networks } from "bitcoinjs-lib";
 import cryptoStore from "./stores/TransactionStore";
 import addressStore from "./stores/WalletStore";
 
+/**
+ * Transaction screen component.
+ */
 const TransactionScreen = observer(() => {
   const [senderAddress, setSenderAddress] = useState("");
   const [receiverAddress, setReceiverAddress] = useState("");
@@ -29,32 +32,57 @@ const TransactionScreen = observer(() => {
     setShowManualReceiverAddressWarning,
   ] = useState(false);
   const [walletType, setWalletType] = useState("");
-  const [transactionAmount, setTransactionAmount] = useState('');
+  const [transactionAmount, setTransactionAmount] = useState("");
 
+  /**
+   * Handles the change event of the sender address picker.
+   * @param {string} address - The selected sender address.
+   */
   const handleSenderAddressChange = (address) => {
     setSenderAddress(address);
     setShowPickerWarning(false);
   };
 
+  /**
+   * Handles the change event of the receiver address picker.
+   * @param {string} address - The selected receiver address.
+   */
   const handleReceiverAddressChange = (address) => {
     setReceiverAddress(address);
     setShowPickerWarning(false);
   };
 
+  /**
+   * Handles the change event of the manual sender address input.
+   * @param {string} address - The manually entered sender address.
+   */
   const handleManualSenderAddressChange = (address) => {
     setManualSenderAddress(address);
     setShowManualSenderAddressWarning(false);
   };
 
+  /**
+   * Handles the change event of the manual receiver address input.
+   * @param {string} address - The manually entered receiver address.
+   */
   const handleManualReceiverAddressChange = (address) => {
     setManualReceiverAddress(address);
     setShowManualReceiverAddressWarning(false);
   };
 
+  /**
+   * Handles the change event of the transaction amount input.
+   * @param {string} amount - The transaction amount.
+   */
   const handleTransactionAmountChange = (amount) => {
     setTransactionAmount(amount);
   };
 
+  /**
+   * Validates a Bitcoin address.
+   * @param {string} address - The Bitcoin address to validate.
+   * @returns {boolean} - True if the address is valid, false otherwise.
+   */
   const validateAddress = (address) => {
     if (bitcoinAdress.toOutputScript(address, networks.testnet)) {
       return true;
@@ -62,6 +90,12 @@ const TransactionScreen = observer(() => {
     return false;
   };
 
+  /**
+   * Retrieves the cryptocurrency object based on the address and wallet type.
+   * @param {string} address - The address to retrieve the cryptocurrency object for.
+   * @param {string} walletType - The type of wallet (bitcoin or polygon).
+   * @returns {object} - The cryptocurrency object.
+   */
   const getCryptoObject = (address, walletType) => {
     let index;
     if (walletType === "bitcoin") {
@@ -77,6 +111,9 @@ const TransactionScreen = observer(() => {
     }
   };
 
+  /**
+   * Handles the submission of the transaction.
+   */
   const handleTransactionSubmit = () => {
     let isValid = true;
     setAdressesEqual(false);
