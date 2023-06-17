@@ -1,0 +1,10 @@
+{
+    "endpoints": {
+        "coingecko": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,usd&vs_currencies=usd",
+        "plygonMumbai": "https://rpc-mumbai.maticvigil.com/v1/5e35334230e91d7f7eebfa65fee2613d09832437",
+        "utxo": "https://api.blockcypher.com/v1/btc/test3/addrs/",
+        "broadcastTxn": "https://api.blockcypher.com/v1/btc/test3/txs/push",
+        "getTxn": "https://api.blockcypher.com/v1/btc/test3/txs/"
+
+    }
+}
