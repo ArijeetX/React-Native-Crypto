@@ -7,20 +7,14 @@ import walletStore from "./stores/WalletStore";
 
 const { width } = Dimensions.get("window");
 
-/**
- * Wallet screen component.
- * Displays wallet import functionality and navigation options.
- */
 const WalletScreen = observer(() => {
   const [privateKey, setPrivateKey] = useState("");
   const [isInvalidPrivateKey, setIsInvalidPrivateKey] = useState(false);
   const [walletType, setWalletType] = useState("");
   const [selectedWalletType, setselectedWalletType] = useState(true);
 
-  /**
-   * Handles the import of the selected wallet type using the provided private key.
-   */
-  const handleImportWallet = () => {
+  const handleImportWallet = async () => {
+
     if (walletType === "") {
       setselectedWalletType(false);
       return;
@@ -33,28 +27,22 @@ const WalletScreen = observer(() => {
         setIsInvalidPrivateKey(true);
       }
     } else if (walletType === "polygon") {
-      if (walletStore.importPolygonWallet(privateKey)) {
+      if (await walletStore.importPolygonWallet(privateKey)) {
         setIsInvalidPrivateKey(false);
         setPrivateKey("");
       } else {
+        console.log("invalid private key")
         setIsInvalidPrivateKey(true);
       }
     }
   };
 
   const navigation = useNavigation();
-
-  /**
-   * Navigates to the transaction screen.
-   */
   const navigateToTransactionScreen = () => {
     cryptoStore.setTransactionCheckersFalse();
     navigation.navigate("Transaction");
   };
 
-  /**
-   * Navigates to the previous transactions screen.
-   */
   const navigateToPreviousTransactionsScreen = () => {
     navigation.navigate("PreviousTransactions");
   };

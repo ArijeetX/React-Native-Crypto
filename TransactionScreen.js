@@ -13,89 +13,56 @@ import { Picker } from "@react-native-picker/picker";
 import { address as bitcoinAdress, networks } from "bitcoinjs-lib";
 import cryptoStore from "./stores/TransactionStore";
 import addressStore from "./stores/WalletStore";
+import { ethers } from "ethers";
+import { set } from "react-native-reanimated";
 
-/**
- * Transaction screen component.
- */
 const TransactionScreen = observer(() => {
   const [senderAddress, setSenderAddress] = useState("");
+  const [senderAddressWarning, setSenderAddressWarning] = useState(false);
   const [receiverAddress, setReceiverAddress] = useState("");
-  const [manualSenderAddress, setManualSenderAddress] = useState("");
   const [manualReceiverAddress, setManualReceiverAddress] = useState("");
+  const [emptyReceiverAddress, setEmptyReceiverAddress] = useState(false);
   const [noTransactionAmount, setNoTransactionAmount] = useState(false);
   const [showPickerWarning, setShowPickerWarning] = useState(false);
+  const [invalidRecieverAddressWarning, setInvalidRecieverAddressWarning] = useState(false);
+  const [invalidTransactionAmountWarning, setInvalidTransactionAmountWarning] = useState(false);
   const [adressesEqual, setAdressesEqual] = useState(false);
-  const [showManualSenderAddressWarning, setShowManualSenderAddressWarning] =
-    useState(false);
   const [
     showManualReceiverAddressWarning,
     setShowManualReceiverAddressWarning,
   ] = useState(false);
   const [walletType, setWalletType] = useState("");
-  const [transactionAmount, setTransactionAmount] = useState("");
+  const [transactionAmount, setTransactionAmount] = useState('');
 
-  /**
-   * Handles the change event of the sender address picker.
-   * @param {string} address - The selected sender address.
-   */
   const handleSenderAddressChange = (address) => {
     setSenderAddress(address);
     setShowPickerWarning(false);
   };
 
-  /**
-   * Handles the change event of the receiver address picker.
-   * @param {string} address - The selected receiver address.
-   */
   const handleReceiverAddressChange = (address) => {
     setReceiverAddress(address);
     setShowPickerWarning(false);
   };
 
-  /**
-   * Handles the change event of the manual sender address input.
-   * @param {string} address - The manually entered sender address.
-   */
-  const handleManualSenderAddressChange = (address) => {
-    setManualSenderAddress(address);
-    setShowManualSenderAddressWarning(false);
-  };
-
-  /**
-   * Handles the change event of the manual receiver address input.
-   * @param {string} address - The manually entered receiver address.
-   */
   const handleManualReceiverAddressChange = (address) => {
     setManualReceiverAddress(address);
     setShowManualReceiverAddressWarning(false);
   };
 
-  /**
-   * Handles the change event of the transaction amount input.
-   * @param {string} amount - The transaction amount.
-   */
   const handleTransactionAmountChange = (amount) => {
     setTransactionAmount(amount);
   };
 
-  /**
-   * Validates a Bitcoin address.
-   * @param {string} address - The Bitcoin address to validate.
-   * @returns {boolean} - True if the address is valid, false otherwise.
-   */
-  const validateAddress = (address) => {
-    if (bitcoinAdress.toOutputScript(address, networks.testnet)) {
+  const validateAddress = (address, walletType) => {
+    if (walletType === "bitcoin"&&bitcoinAdress.toOutputScript(address, networks.testnet))
       return true;
-    }
+    
+    if (walletType == "polygon" && ethers.utils.isAddress(address))
+      return true;
+
     return false;
   };
 
-  /**
-   * Retrieves the cryptocurrency object based on the address and wallet type.
-   * @param {string} address - The address to retrieve the cryptocurrency object for.
-   * @param {string} walletType - The type of wallet (bitcoin or polygon).
-   * @returns {object} - The cryptocurrency object.
-   */
   const getCryptoObject = (address, walletType) => {
     let index;
     if (walletType === "bitcoin") {
@@ -111,49 +78,59 @@ const TransactionScreen = observer(() => {
     }
   };
 
-  /**
-   * Handles the submission of the transaction.
-   */
   const handleTransactionSubmit = () => {
     let isValid = true;
     setAdressesEqual(false);
+    setSenderAddressWarning(false);
     setNoTransactionAmount(false);
+    setInvalidRecieverAddressWarning(false);
+    setInvalidTransactionAmountWarning(false);
+    setEmptyReceiverAddress(false);
+    cryptoStore.setTransactionCheckersFalse();
 
-    if ((!senderAddress && !manualSenderAddress) || (senderAddress && manualSenderAddress)) {
-      setShowPickerWarning(true);
-      setShowManualSenderAddressWarning(true);
+    if (!senderAddress) {
+      setSenderAddressWarning(true);
       isValid = false;
-      return;
     }
 
-    if ((!receiverAddress && !manualReceiverAddress) || (receiverAddress && manualReceiverAddress)) {
+    if (!receiverAddress && !manualReceiverAddress) {
+      setEmptyReceiverAddress(true);
+      isValid = false;
+    }
+
+    if ((receiverAddress && manualReceiverAddress)) {
       setShowPickerWarning(true);
       setShowManualReceiverAddressWarning(true);
       isValid = false;
-      return;
     }
+    const finalReceiverAddress = receiverAddress || manualReceiverAddress;
 
-    if (senderAddress === receiverAddress) {
+    if ((finalReceiverAddress&&senderAddress)&&finalReceiverAddress === senderAddress) {
       setAdressesEqual(true);
       isValid = false;
-      return;
+    }
+    
+    if (receiverAddress&&!validateAddress(finalReceiverAddress, walletType)) {
+      setInvalidRecieverAddressWarning(true);
+      isValid = false;
     }
 
     if (!transactionAmount) {
       setNoTransactionAmount(true);
       isValid = false;
-      return;
+    }
+
+    if (isNaN(Number(transactionAmount))) {
+      setInvalidTransactionAmountWarning(true);
+      isValid = false;
     }
 
     if (isValid) {
-      const finalSenderAddress = senderAddress || manualSenderAddress;
-      const finalReceiverAddress = receiverAddress || manualReceiverAddress;
-      const senderCryptoObject = getCryptoObject(finalSenderAddress, walletType);
-      const receiverCryptoObject = getCryptoObject(finalReceiverAddress, walletType);
+      const senderCryptoObject = getCryptoObject(senderAddress, walletType);
 
       cryptoStore.setSenderAddress(senderCryptoObject.address);
       cryptoStore.setSenderPrivateKey(senderCryptoObject.privateKey);
-      cryptoStore.setRecipientAddress(receiverCryptoObject.address);
+      cryptoStore.setRecipientAddress(finalReceiverAddress);
       cryptoStore.setTransactionAmount(Number(transactionAmount));
 
       if (walletType === "bitcoin") {
@@ -202,23 +179,7 @@ const TransactionScreen = observer(() => {
             />
           ))}
       </Picker>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter sender address manually"
-        value={manualSenderAddress}
-        onChangeText={handleManualSenderAddressChange}
-      />
-
-      {showPickerWarning && showManualSenderAddressWarning && (
-        <Text style={styles.warning}>
-          Please select only one option for the sender address.
-        </Text>
-      )}
-
-      {showManualSenderAddressWarning &&
-        !validateAddress(manualSenderAddress) && (
-          <Text style={styles.warning}>Invalid sender address.</Text>
-        )}
+      {senderAddressWarning && <Text style={styles.warning}>Please select a sender address.</Text>}
 
       <Text style={styles.label}>Receiver Address:</Text>
       <Picker
@@ -251,14 +212,15 @@ const TransactionScreen = observer(() => {
         onChangeText={handleManualReceiverAddressChange}
       />
 
+      {emptyReceiverAddress && <Text style={styles.warning}>Please select a receiver address or input one.</Text>}
+
       {showPickerWarning && showManualReceiverAddressWarning && (
         <Text style={styles.warning}>
           Please select only one option for the receiver address.
         </Text>
       )}
 
-      {showManualReceiverAddressWarning &&
-        !validateAddress(manualReceiverAddress) && (
+      {invalidRecieverAddressWarning&& (
           <Text style={styles.warning}>Invalid receiver address.</Text>
         )}
       <TextInput
@@ -267,6 +229,7 @@ const TransactionScreen = observer(() => {
         value={transactionAmount}
         onChangeText={handleTransactionAmountChange}
       />
+      {invalidTransactionAmountWarning && <Text style={styles.warning}>Invalid transaction amount.</Text>}
       <Button title="Submit Transaction" onPress={handleTransactionSubmit} />
       {adressesEqual && (
         <Text style={styles.warning}>

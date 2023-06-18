@@ -1,4 +1,11 @@
+import React from "react";
+import { observer } from "mobx-react";
+import { View, Text, StyleSheet, Button, Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
+import priceStore from "./stores/PriceStore";
 /**
+ * 
  * React component for displaying the price screen.
  * @returns {JSX.Element} PriceScreen component.
  */

@@ -1,3 +1,7 @@
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet, Linking, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { observer } from "mobx-react";
+import transactionDetailsStore from "./stores/TransactionDetailsStore";
 /**
  * React component for displaying transaction details.
  * @param {object} route - The route object containing the transactionHash and walletType parameters.

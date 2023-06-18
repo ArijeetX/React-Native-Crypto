@@ -1,3 +1,9 @@
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { observer } from "mobx-react";
+import { useNavigation } from "@react-navigation/native";
+import transactionDetailsStore from "./stores/TransactionDetailsStore";
+import cryptoStore from "./stores/TransactionStore";
 /**
  * React component for displaying the previous transactions screen.
  * @returns {JSX.Element} PreviousTransactionsScreen component.
